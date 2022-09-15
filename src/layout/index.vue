@@ -1,7 +1,9 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <!-- 左侧边导航栏 -->
     <sidebar class="sidebar-container" />
+    <!-- 右侧 -->
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />

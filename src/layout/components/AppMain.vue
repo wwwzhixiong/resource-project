@@ -1,6 +1,8 @@
 <template>
   <section class="app-main">
+    <!-- transition 是Vue的内置组件 -->
     <transition name="fade-transform" mode="out-in">
+      <!-- 二级路由容器 -->
       <router-view :key="key" />
     </transition>
   </section>

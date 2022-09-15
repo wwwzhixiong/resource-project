@@ -32,7 +32,7 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
-    path: '/login',
+    path: '/login', // 一级路由
     component: () => import('@/views/login/index'),
     hidden: true
   },
@@ -43,7 +43,7 @@ export const constantRoutes = [
     hidden: true
   },
 
-  {
+  { // 一级路由的布局页面
     path: '/',
     component: Layout,
     redirect: '/dashboard',

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-
+// 控制菜单栏展开或者折叠效果
 const state = {
   sidebar: {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
