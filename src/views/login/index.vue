@@ -8,14 +8,14 @@
         </h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="mobile">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
+          v-model="loginForm.mobile"
+          placeholder="请输入手机号"
           name="username"
           type="text"
           tabindex="1"
@@ -32,12 +32,13 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
+        <!-- enter 是按键修饰符 -->
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
@@ -55,33 +56,33 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { validMobile } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
+    const validateMobile = (rule, value, callback) => {
+      // 方式1 ：if-else 判断
+      // if (!validMobile(value)) {
+      //   callback(new Error('手机号格式不正确'))
+      // } else {
+      //   callback()
+      // }
+      // 方式2：
+      validMobile(value) ? callback() : callback(new Error('手机号格式不正确'))
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        mobile: '13800000002',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        mobile: [{ required: true, trigger: 'blur', message: '手机号不能为空' }, {
+          validator: validateMobile, trigger: 'blur'
+        }],
+        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }, {
+          min: 6, max: 16, trigger: 'blur', message: '密码长度为6-16'
+        }]
       },
       loading: false,
       passwordType: 'password',
@@ -108,18 +109,17 @@ export default {
       })
     },
     handleLogin() {
+      // 点击登录按钮后对表单进行手动校验
       this.$refs.loginForm.validate(valid => {
+        // 如果值为true说明验证通过了
         if (valid) {
-          this.loading = true
+          // console.log('验证通过')
+          // 如果验证通过，调用登录接口，是通过触发actions里面的方法
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
+            this.$router.push('/') // 登录成功之后 跳转到主页
+          }).cathch((err) => {
+            console.log(err)
           })
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     }
@@ -166,18 +166,18 @@ $cursor: #fff;
       }
     }
   }
-
+// 登录表单的样式
     .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.7); // 输入登录表单的背景色
     border-radius: 5px;
     color: #454545;
   }
-
+// 设置错误信息的样式
  .el-form-item__error {
     color: #fff
   }
-
+// 修改登录按钮的样式
   .loginBtn {
   background: #407ffe;
   height: 64px;

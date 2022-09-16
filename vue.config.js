@@ -27,7 +27,7 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: process.env.NODE_ENV === 'development', // 环境变量的值=development时是生产环境
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -36,7 +36,20 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    // 配置反向代理
+    proxy: {
+      // 当地址中有/api的时候会触发代理机制
+      '/api': {
+        target: 'http://ihrm-java.itheima.net/', // 要代理的真实服务器地址，这不用写api
+        changOrigin: true // 是否跨域 只有为 true才会开启跨域
+        // 代理完毕之后的真实服务地址会变成: http://ihrm-java.itheima . net/api,
+        // 这里为什么要注释掉路径重写?L/是因为咋们的后台服务地址正好要求有这个api,所以不需要重写
+
+        // 重写路径
+        // pathRewrite:{'^/api'}
+      }
+    }
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
