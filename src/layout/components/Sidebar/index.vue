@@ -1,5 +1,6 @@
 <template>
   <div :class="{'has-logo':showLogo}">
+    <!-- 左侧菜单栏上方的图标 -->
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu

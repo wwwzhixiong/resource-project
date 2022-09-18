@@ -12,5 +12,5 @@ module.exports = {
    * @type {boolean} true | false
    * @description Whether show the logo in sidebar
    */
-  sidebarLogo: false // 控制左侧菜单栏图标是否展示
+  sidebarLogo: true // 控制左侧菜单栏图标是否展示
 }

@@ -43,7 +43,7 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
+      <!-- loading是控制加载中的效果 -->
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" class="loginBtn" @click.native.prevent="handleLogin">登录</el-button>
 
       <div class="tips">
@@ -57,7 +57,7 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
-
+import { mapActions } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -108,21 +108,39 @@ export default {
         this.$refs.password.focus()
       })
     },
+    ...mapActions(['user/login']), // 相当于在methods有一个user/login的方法
     handleLogin() {
       // 点击登录按钮后对表单进行手动校验
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(async valid => {
         // 如果值为true说明验证通过了
         if (valid) {
-          // console.log('验证通过')
-          // 如果验证通过，调用登录接口，是通过触发actions里面的方法
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push('/') // 登录成功之后 跳转到主页
-          }).cathch((err) => {
+          // 方式1：通过￥$dispath触发。搭配then()
+          // this.loading = true // 开启loading加载中
+          // // console.log('验证通过')
+          // // 如果验证通过，调用登录接口，是通过触发actions里面的方法
+          // this.$store.dispatch('user/login', this.loginForm).then(() => {
+          //   this.$router.push('/') // 登录成功之后 跳转到主页
+          //   this.loading = false
+          // }).cathch((err) => {
+          //   this.loading = false // 不管响应成功还是false loading都是关闭的
+          //   console.log(err)
+          // })
+          try {
+            // 方法2：通过mapActions辅助函数的方式触发actions里面的方法，从而调用的登录接口
+            this.loading = true // 开启loading加载中
+            // 捕获错误需要加到trcatch里面
+            await this['user/login'](this.loginForm)
+          // this.$rooter.push('/)
+          } catch (err) {
             console.log(err)
-          })
+          } finally {
+            //  不管成功与否，都会走到finally这个逻辑里
+            this.loading = false
+          }
         }
       })
     }
+
   }
 }
 </script>
