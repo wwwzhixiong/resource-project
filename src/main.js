@@ -14,6 +14,17 @@ import router from './router' // 引入路由
 
 import '@/icons' // 引入图标文件
 import '@/permission' // 引入权限配置文件
+// 引入封装好的自定义指令文件
+// import { imagerror } from '@/directives'
+import * as directives from '@/directives' // 把文件中所有导出得常量命名为directives，
+// 所有导出得数据在这个directives
+console.log(directives) // 经过打印发现，他是一个对象，里面存的就是我们导出得数据
+// 问题：如何拿到对象当中所有得属性？
+// Object.keys()方法会返回一个由一个给定对象的自身可枚举属性组成的数组，
+// 数组中属性名的排列顺序和正常循环遍历该对象时返回的顺序一致。
+Object.keys(directives).forEach(key => {
+  Vue.directive(key, directives[key])
+})
 
 /**
  * If you don't want to use mock-server

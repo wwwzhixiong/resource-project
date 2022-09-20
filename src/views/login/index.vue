@@ -130,7 +130,7 @@ export default {
             this.loading = true // 开启loading加载中
             // 捕获错误需要加到trcatch里面
             await this['user/login'](this.loginForm)
-          // this.$rooter.push('/)
+            this.$router.push('/')
           } catch (err) {
             console.log(err)
           } finally {

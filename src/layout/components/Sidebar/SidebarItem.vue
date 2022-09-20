@@ -1,5 +1,8 @@
 <template>
   <div v-if="!item.hidden">
+    <!--item.hidden控制左侧菜单是否展示,404和登录由于hidden是true,所以在菜单中是隐藏的--> I
+    <!-- hasOneShowingChild这个方法的意思是判断路由中children的数量，如果有一个children的话就展示下面的模板-->
+    <!-- 如果只有一个children，就证明没有二级菜单 -->
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
@@ -7,11 +10,13 @@
         </el-menu-item>
       </app-link>
     </template>
-
+    <!--如果根据hasOneShowingChild这个方法判断children里面还有children的话，就证明有二级菜单，则渲染的是这个模板--->
     <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
+      <!-- el-submenu二级菜单 -->
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />
       </template>
+      <!-- 组件递归，组件里使用自己 解决的就是菜单的树形解构展示问题-->
       <sidebar-item
         v-for="child in item.children"
         :key="child.path"

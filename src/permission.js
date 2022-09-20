@@ -6,13 +6,18 @@ import 'nprogress/nprogress.css' // 引入进度条样式
 // 定制白名单
 const whiteList = ['/login', '/404']
 // 前置守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   NProgress.start() // 开启进度条
   if (store.getters.token) {
     // 如果有token
     if (to.path === '/login') {
       next('/') // 跳到主页
     } else {
+      // 因为每个路由地址的切换都会经过路由首位，为了防止多次触发获取用户资料的接口，我们需要做一个判断，判断现在有没有用户资料，如果有用户资料，则不用获取，如果没有，才进行获取
+      // 通过userId去判断有没有用户资料
+      if (!store.getters.userId) {
+        await store.dispatch('user/getUserInfo') // 等待湖区用资料后在执行next()方法跳转
+      }
       next() // 如果有token但不是登录页面则直接放行
     }
   } else {
@@ -27,6 +32,7 @@ router.beforeEach((to, from, next) => {
   }
   NProgress.done()// 有一种情况，在有token的时候，跳转登录页又会重定向到主页，相当于咋们的路由地址没行交化，保持原地不动，|
 })
+
 // 在路由后置守卫关闭进度条,代表页面跳转成功后执行的钩子函数，里面有两个参数，一个是to  ,from，没有next这个方法
 // 常用来修改标题之类的
 router.afterEach(() => {

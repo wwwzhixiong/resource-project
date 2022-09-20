@@ -13,6 +13,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
+        <!--把菜单组件中间的标签elL -menu-item又单独封装为了一个组件-->
         <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
@@ -32,7 +33,7 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      return this.$router.options.routes // 从路由信息中获取左侧菜单数据
     },
     activeMenu() {
       const route = this.$route

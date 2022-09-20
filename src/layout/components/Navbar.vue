@@ -10,7 +10,8 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img v-imageerror="defaultImg" :src="staffPhoto" class="user-avatar">
+          <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -21,11 +22,11 @@
           </router-link>
           <a target="_blank" href="https://github.com/wwwzhixiong/resource-project">
             <el-dropdown-item>项目地址</el-dropdown-item>
-
-            <el-dropdown-item divided @click.native="logout">
-              <span style="display:block;">退出登录</span>
-            </el-dropdown-item>
-          </a></el-dropdown-menu>
+          </a>
+          <el-dropdown-item divided @click.native="logout">
+            <span style="display:block;">退出登录</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
       </el-dropdown>
     </div>
   </div>
@@ -41,10 +42,17 @@ export default {
     // Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      // 变量中引入图片地址可以用require得方式
+      defaultImg: require('@/assets/common/head.jpg')
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'staffPhoto', // 用户头像
+      'name' // 用户信息
     ])
   },
   methods: {
@@ -53,7 +61,11 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // 这里加await和不加都可以,因为没有异步代码
+      this.$router.push('/login')
+      // 第二种方式:不用在actions里面封装logout方法，直接通过l
+      // this.$store.commit( 'user/removeToken')
+      // this.$store.commit( 'user/rempveUserInfo')
     }
   }
 }
@@ -137,12 +149,19 @@ export default {
         margin-top: 5px;
         position: relative;
 
-        .user-avatar {
+     .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
+          width: 30px;
+          height: 30px;
+          border-radius: 15px;
+          vertical-align: middle;
+
+   }
+   .name {
+          color: #fff;
+          vertical-align: middle;
+          margin-left:5px;
+   }
 
         .el-icon-caret-bottom {
           cursor: pointer;
@@ -150,6 +169,7 @@ export default {
           right: -20px;
           top: 25px;
           font-size: 12px;
+          color: #fff;
         }
       }
     }
