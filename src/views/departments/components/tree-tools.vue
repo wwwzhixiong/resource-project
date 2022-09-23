@@ -51,11 +51,14 @@ export default {
     // 操作节点调用的方法
     operateDepts(type) {
       if (type === 'add') {
-
+        // //在点击添加选项的时候，需要子组件父组件传涕事件，
+        // 顺便将占击的当前节占的信息传递过去,就是porps中的treeNode
         // 添加子部门的操作
+        this.$emit('addDepts', this.treeNode)
       } else if (type === 'edit') {
         //  编辑部门的操作
-
+        // 点击编辑按钮，子组件向父组件传递事件，让弹框展示,同时将当前点击的节点对象信息传递了过去
+        this.$emit('editDepts', this.treeNode)
       } else {
         //  删除操作
         this.$confirm('您确定要删除该组织部门吗', '提示', {
