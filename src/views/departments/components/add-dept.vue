@@ -50,21 +50,41 @@ export default {
     }
   },
   data() {
-    const checkNameRepeat = async(rule, val, callback) => {
-      // 在失去焦点的时候重新获取数据
+    // 现在定义一个函数 这个函数的目的是 去找 同级部门下 是否有重复的部门名称
+    const checkNameRepeat = async(rule, value, callback) => {
+      // 先要获取最新的组织架构数据
       const { depts } = await getDepartments()
-      // 找当前节点下的同级部门
-      const isRepeat = depts.filter(item => item.pid === this.currentNode.id).some(item => item.name === val)
-      // 通过数组的filter方法找到当前节点下的所有同级部门之后，接下来要用输入框中输入的名称和筛选出来的数据的名称做对比，
-      // 只要有一个相等，就代表有重复的，表单验证不通过
-      isRepeat ? callback(new Error(`同级部门下已经有${val}的部门了`)) : callback()
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
+      // depts是所有的部门数据
+      // 如何去找技术部所有的子节点
+      let isRepeat = false
+      if (this.formData.id) {
+        // 有id就是编辑模式
+        // 编辑 张三 => 校验规则 除了我之外 同级部门下 不能有叫张三的
+        isRepeat = depts.filter(item => item.id !== this.formData.id && item.pid === this.currentNode.pid).some(item => item.name === value)
+      } else {
+        // 没id就是新增模式
+        isRepeat = depts.filter(item => item.pid === this.currentNode.id).some(item => item.name === value)
+      }
+
+      isRepeat ? callback(new Error(`同级部门下已经有${value}的部门了`)) : callback()
     }
-    const checkCodeRepeat = async(rule, val, callback) => {
-      // 在失去焦点的时候需要重新获取数据
+    // 检查编码重复
+    const checkCodeRepeat = async(rule, value, callback) => {
+      // 先要获取最新的组织架构数据
+      //  检查重复规则 需要支持两种 新增模式 / 编辑模式
       const { depts } = await getDepartments()
-      // 由于是和所有的部门编码进行对比，所以不用过滤，并且输入的编码不能为空
-      const isRepeat = depts.some(item => item.code === val && val) // 这里加一个value不为空
-      isRepeat ? callback(new Error(`组织架构已经有部门使用${val}编码`)) : callback()
+      let isRepeat = false
+      if (this.formData.id) {
+        // 编辑模式  因为编辑模式下 不能算自己
+        // 同时用到了fileter和some方法
+        isRepeat = depts.filter(item => item.id !== this.currentNode.id).some(item => item.code === value && value)
+      } else {
+        // 新增模式
+        isRepeat = depts.some(item => item.code === value && value) // 这里加一个 value不为空 因为我们的部门有可能没有code
+      }
+
+      isRepeat ? callback(new Error(`组织架构中已经有部门使用${value}编码`)) : callback()
     }
     return {
       formData: {
