@@ -2,7 +2,8 @@
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
     <!-- 全局组件可以直接使用 -->
-    <uploadExcel />
+    <!-- <uploadExcel /> -->
+    <ImageUpload />
   </div>
 </template>
 

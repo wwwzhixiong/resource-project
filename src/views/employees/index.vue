@@ -24,6 +24,19 @@
       <el-table border :data="list">
         <el-table-column label="序号" sortable="" type="index" />
         <el-table-column label="姓名" sortable="" prop="username" />
+        <el-table-column label="头像" align="center">
+          <!-- template v-slot="{row}" -->
+          <template slot-scope="{row}">
+            <img
+              slot="reference"
+              v-imagerror="require('@/assets/common/bigUserHeader.png')"
+              :src="row.staffPhoto"
+              style="border-radius: 50%; width: 100px; height: 100px; padding: 10px"
+              alt=""
+              @click="showCode(row.staffPhoto)"
+            >
+          </template>
+        </el-table-column>
         <el-table-column label="工号" sortable="" prop="workNumber" />
         <el-table-column label="聘用形式" sortable="" prop="formOfEmployment" :formatter="formatEmployment" />
         <el-table-column label="部门" sortable="" prop="departmentName" />
@@ -61,6 +74,13 @@
         />
       </el-row>
     </div>
+    <!-- 二维码弹层 -->
+    <el-dialog :visible.sync="showCodeDialog" title="二维码">
+      <el-row type="flex" justify="center">
+        <!-- canvas是h5的标签，一个画布比普通的标签功能强大，可以画图 -->
+        <canvas ref="myCanvas" />
+      </el-row>
+    </el-dialog>
     <!-- 放置新增弹层组件 -->
     <!-- sync修饰符 子组件去改变父组件数据的语法糖 ，帮助我们少写代码-->
     <addemployee :show-dialog.sync="showDialog" />
@@ -69,6 +89,7 @@
 </template>
 
 <script>
+import QrCode from 'qrcode'
 import addemployee from './components/add-employee'
 import { getEmployeeList, delEmployee } from '@/api/employess'
 import EmployeeEnum from '@/api/constant/employees'
@@ -88,12 +109,13 @@ export default {
         total: 0 // 总数
       },
       loading: false, // 显示遮罩层
-      showDialog: false
+      showDialog: false,
+      showCodeDialog: false
     }
   },
   created() {
     this.getEmployeeList()
-    this.delEmployee()
+    // this.delEmployee()
   },
   methods: {
     async  getEmployeeList() {
@@ -190,6 +212,23 @@ export default {
       })
       return test
       // return test // test是最终处理完的数据结构[〔[ '张三', '15209223972'],[ '李四', 1367890001']]
+    },
+    // 点击头像展开弹层
+    showCode(url) {
+      // 如果有头像地址，将头像地址转化为二维码，如果没有，则提示还没有上传图片
+      if (url) {
+        // 展示弹层
+        this.showCodeDialog = true
+        // 调用插件的方法,生成二维码有两个参数 1： canvas画布的实例 2：要转换的图片地址
+        // 注意:控制弹层的这个变量的值由false，变为true的时候，DON发生了更新，
+        // 我们想要立马拿到更新后的DON是不行的，因为DON的更新是异步的,可以在this.$nextTick方法里面
+        this.$nextTick(() => {
+          // 拿到更新后的dom,就可以进行正常操作了
+          QrCode.toCanvas(this.$refs.myCanvas, url)
+        })
+      } else {
+        this.$message.error('该员工还没有上传头像')
+      }
     }
   }
 }

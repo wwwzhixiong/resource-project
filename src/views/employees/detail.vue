@@ -17,8 +17,16 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="个人详情" />
-          <el-tab-pane label="岗位信息" />
+          <el-tab-pane label="个人详情">
+            <!-- <user-info>个人详情组件</user-info> -->
+            <!-- vue.js中内置了一个组件 component  它通过is属性绑定组件-->
+            <component :is="userComponent" />
+            <!-- 动态组件 可以切换组件 is必须是变量，否则component没意义 -->
+          </el-tab-pane>
+          <el-tab-pane label="岗位信息">
+            <component :is="UserJob" />
+
+          </el-tab-pane>
         </el-tabs>
       </el-card>
     </div>
@@ -29,9 +37,18 @@
 // 按需引入查询接口
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employess'
+// 引入员工详情组件
+import UserInfo from './components/user-Info.vue'
+import JobInfo from './components/job-Info.vue'
 export default {
+  components: {
+    UserInfo,
+    JobInfo
+  },
   data() {
     return {
+      userComponent: 'UserInfo',
+      UserJob: 'JobInfo',
       userId: this.$route.params.id,
       //  获取路由地址中的: 拼接动态参数 id 需要用this.$router.params.参数名称
       // 例如：'detail/:id?'
@@ -41,7 +58,7 @@ export default {
       userInfo: {
         //   专门存放基本信息
         username: '',
-        password2: ''
+        password2: '' // 因为读取出来的password 是 密文
       },
       // 校验规则
       rules: {
@@ -56,6 +73,7 @@ export default {
   },
   methods: {
     async getUserDetailById() {
+      // 传入id
       this.userInfo = await getUserDetailById(this.userId)
     },
     // 定义修改用户信息的方法
