@@ -18,14 +18,29 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="个人详情">
+            <!-- 打印按钮 -->
+            <el-row type="flex" justify="end">
+              <el-tooltip content="打印个人基本信息">
+                <!-- 声明式导航的跳转方式 -->
+                <router-link :to="`/employees/print/${userId}?type=personal`">
+                  <i class="el-icon-printer" />
+                </router-link>
+              </el-tooltip>
+            </el-row>
             <!-- <user-info>个人详情组件</user-info> -->
             <!-- vue.js中内置了一个组件 component  它通过is属性绑定组件-->
             <component :is="userComponent" />
             <!-- 动态组件 可以切换组件 is必须是变量，否则component没意义 -->
           </el-tab-pane>
           <el-tab-pane label="岗位信息">
+            <el-row type="flex" justify="end">
+              <el-tooltip content="打印岗位信息">
+                <router-link :to="`/employees/print/${userId}?type=job`">
+                  <i class="el-icon-printer" />
+                </router-link>
+              </el-tooltip>
+            </el-row>
             <component :is="UserJob" />
-
           </el-tab-pane>
         </el-tabs>
       </el-card>

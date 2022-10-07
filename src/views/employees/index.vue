@@ -58,7 +58,7 @@
             <el-button type="text" size="small">转正</el-button>
             <el-button type="text" size="small">调岗</el-button>
             <el-button type="text" size="small">离职</el-button>
-            <el-button type="text" size="small">角色</el-button>
+            <el-button type="text" size="small" @click="editRole(row.id)">角色</el-button>
             <el-button type="text" size="small" @click="deleteEmployee(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -84,6 +84,8 @@
     <!-- 放置新增弹层组件 -->
     <!-- sync修饰符 子组件去改变父组件数据的语法糖 ，帮助我们少写代码-->
     <addemployee :show-dialog.sync="showDialog" />
+    <!-- 角色组件使用 -->
+    <assign-role ref="assignRole" :show-role-dialog.sync="showRoleDialog" :user-id="userId" />
   </div>
 
 </template>
@@ -94,13 +96,16 @@ import addemployee from './components/add-employee'
 import { getEmployeeList, delEmployee } from '@/api/employess'
 import EmployeeEnum from '@/api/constant/employees'
 import { formatDate } from '@/filters'
+import AssignRole from './components/assign-role.vue'
 // 引入转换日期格式方法
 export default {
   components: {
-    addemployee
+    addemployee,
+    AssignRole
   },
   data() {
     return {
+      showRoleDialog: false, // 控制角色弹层隐藏展示
       list: [], // 接受数组
       page: {
         // 分页
@@ -110,7 +115,8 @@ export default {
       },
       loading: false, // 显示遮罩层
       showDialog: false,
-      showCodeDialog: false
+      showCodeDialog: false,
+      userId: ''// 点击获取用户ID
     }
   },
   created() {
@@ -229,6 +235,12 @@ export default {
       } else {
         this.$message.error('该员工还没有上传头像')
       }
+    },
+    // 编辑角色的方法
+    editRole(id) {
+      this.showRoleDialog = true // 打开弹层
+      this.userId = id
+      this.$refs.assignRole.getUserDetailById(this.userId)
     }
   }
 }
