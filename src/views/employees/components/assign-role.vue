@@ -68,6 +68,7 @@ export default {
       await assignRoles({ id: this.userId, roleIds: this.roleIds })
       //   关闭窗体
       this.$emit('update:showRoleDialog', false)
+      // this.$parent.showRoleDialog = false
       this.$message.success('修改权限成功')
     },
     btnCancel() {
